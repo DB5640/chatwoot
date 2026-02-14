@@ -102,3 +102,41 @@ Practical checklist for any change impacting core logic or public APIs
 ## Branding / White-labeling note
 
 - For user-facing strings that currently contain "Chatwoot" but should adapt to branded/self-hosted installs, prefer applying `replaceInstallationName` from `shared/composables/useBranding` in the UI layer (for example tooltip and suggestion labels) instead of adding hardcoded brand-specific copy.
+
+## PWA & Mobile Notifications
+
+### Architecture
+- **Manifest**: `public/manifest.json` - PWA configuration with scope, display, and platform settings
+- **Service Worker**: `public/sw.js` - Handles push notifications, background sync, and offline caching
+- **Workbox Config**: `workbox-config.js` - Cache strategies and runtime caching rules
+- **Client Helper**: `app/javascript/dashboard/helper/pushHelper.js` - Registers SW and manages push subscriptions
+
+### Mobile Notification Requirements
+For notifications to work on mobile devices:
+1. **Browser permissions**: Notifications must be enabled in browser settings
+2. **Background execution**: Allow browser/app to run in background (check device battery optimization settings)
+3. **Service Worker active**: SW must remain registered and active
+4. **Network**: Needs periodic connectivity to receive push events
+
+### Keep-Alive Mechanism
+- Service worker sends keep-alive messages every 30 seconds to maintain active connection
+- Periodic background sync (24h interval) on supported browsers
+- Cache strategies ensure app works offline and remains responsive
+
+### Troubleshooting Mobile Notifications
+If notifications don't work on mobile:
+1. Clear app data/cache in browser settings
+2. Disable battery optimization for the browser app
+3. Re-register push notifications in Chatwoot settings
+4. Check browser console for SW registration errors
+5. Verify push subscription is active: Settings → Profile → Notifications
+
+### Regenerating Service Worker
+After modifying `workbox-config.js`:
+```bash
+# If using workbox CLI
+npx workbox generateSW workbox-config.js
+
+# Or rebuild assets
+pnpm build
+```

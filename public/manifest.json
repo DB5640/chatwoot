@@ -1,6 +1,7 @@
 {
   "name": "Chatwoot",
   "short_name": "Chatwoot",
+  "description": "Customer engagement platform",
   "icons": [{
     "src": "\/android-icon-36x36.png",
     "sizes": "36x36",
@@ -36,9 +37,19 @@
     "sizes": "192x192",
     "type": "image\/png",
     "density": "4.0"
+   },
+   {
+    "src": "\/android-icon-192x192.png",
+    "sizes": "192x192",
+    "type": "image\/png",
+    "purpose": "any maskable"
    }],
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#1f93ff",
-  "theme_color": "#1f93ff"
+  "theme_color": "#1f93ff",
+  "prefer_related_applications": false,
+  "categories": ["business", "productivity"]  
 }

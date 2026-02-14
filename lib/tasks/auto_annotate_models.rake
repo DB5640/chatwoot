@@ -1,7 +1,8 @@
 # NOTE: only doing this in development as some production environments (Heroku)
 # NOTE: are sensitive to local FS writes, and besides -- it's just not proper
 # NOTE: to have a dev-mode tool do its thing in production.
-if Rails.env.development?
+# NOTE: Temporarily disabled due to Ruby 3.4 / Psych YAML parsing compatibility issues
+if false && Rails.env.development?
   require 'annotate_rb'
 
   AnnotateRb::Core.load_rake_tasks

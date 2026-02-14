@@ -16,7 +16,37 @@ export const verifyServiceWorkerExistence = (callback = () => {}) => {
 
   navigator.serviceWorker
     .register('/sw.js')
-    .then(registration => callback(registration))
+    .then(registration => {
+      callback(registration);
+
+      // Configurar periodic background sync para mantener conexión activa en móvil
+      if ('periodicSync' in registration) {
+        registration.periodicSync
+          .register('check-notifications', {
+            minInterval: 24 * 60 * 60 * 1000, // 24 horas
+          })
+          .catch(err => {
+            console.log('Periodic sync no disponible:', err);
+          });
+      }
+
+      // Enviar mensaje keep-alive cada 30 segundos para mantener SW activo
+      setInterval(() => {
+        if (navigator.serviceWorker.controller) {
+          const messageChannel = new MessageChannel();
+          messageChannel.port1.onmessage = event => {
+            if (event.data.type === 'ALIVE') {
+              // Service worker está activo
+              console.log('Service worker está activo');
+            }
+          };
+          navigator.serviceWorker.controller.postMessage(
+            { type: 'KEEP_ALIVE' },
+            [messageChannel.port2]
+          );
+        }
+      }, 30000);
+    })
     .catch(registrationError => {
       // eslint-disable-next-line
       console.log('SW registration failed: ', registrationError);
